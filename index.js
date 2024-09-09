@@ -80,20 +80,18 @@ app.post("/api/save", upload.single("video"), async (req, res) => {
     }
 })
 
-app.delete("api/delete/:id",async (req, res) => {
+app.delete("/api/delete/:id",async (req, res) => {
     try {
         const video = await Video.findById(req.params.id);
-
         if (!video) {
             return res.status(404).json({ message: 'Video not found' });
         }
-
         const videoPath = path.resolve(video.path);
-
         if (fs.existsSync(videoPath)) {
             fs.unlinkSync(videoPath);
         }
-        await video.remove();
+
+        await Video.findByIdAndDelete(req.params.id);
 
         res.status(200).json({ message: 'Video deleted successfully' });
     } catch (err) {
